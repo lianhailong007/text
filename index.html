@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>记事本</title>
+</head>
+<body>
+	<header>
+		<section>
+			<label for="">Memo</label>
+<!-- 			<input type="button" value="+" id="btn"> -->
+			<input type="text" placeholder="添加内容" id="nr">
+		</section>
+	</header>
+	<section class="main">
+		<h3>正进行:<span class="wwc">0</span></h3>
+		<ul id="bwl">
+		</ul>
+		<h3>已完成:<span class="wc">0</span></h3>
+		<ul id="ywc">
+		</ul>
+	</section>
+	<style>
+		*{
+		margin: 0;   
+		padding: 0;
+	    }
+		body{
+		
+		background: url(img/1.jpg) no-repeat 0 0;
+		background-size: 100%;
+		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	    }
+		header{
+		width: 100%;
+		height: 50px;
+		background: rgba(0,0,0,0.9);
+	    }
+		header section{
+		margin: 0 auto;
+		max-width: 600px;
+	    }
+		header section label{
+		color: #fff;
+		font-size: 28px;
+		line-height: 50px;
+		float: left;
+	    }
+		header section #nr{
+		width: 60%;
+		height: 24px;
+		border-radius: 5px;
+		margin-top: 12px;
+		float: right;
+		line-height: 50px;
+		text-indent: 10px;
+		color: #a9a9a9;
+		box-shadow: 0 1px 0 rgba(255,255,255,0.24), 0 1px 6px rgba(0,0,0,0.45) inset;
+    	border: none;
+    	outline: none;
+	    }
+		header section #btn{
+		width: 24px;
+		height: 24px;
+		float: right;
+		margin-top: 12px;
+		box-shadow: 0 1px 0 rgba(255,255,255,0.24), 0 1px 6px rgba(0,0,0,0.45) inset;
+    	border: none;
+    	border-radius: 5px;
+    	margin-left: 5px;
+    	outline: none;
+    	background: #fff;
+	    }
+		.main{
+		max-width:600px;
+		margin: 0 auto; 
+		padding: 40px 0;
+		box-sizing:border-box;
+		/*background: red;*/
+	    }
+		.main h3{
+		color: #000;
+		font-size: 24px;
+		margin:20px 0;
+	    }
+		.main h3 span{
+		float: right;
+		display: block;
+		width: 22px;
+		height: 25px;
+		border-radius: 50%;
+		background: #ccc;
+		text-align: center;
+		font-size: 16px;
+		line-height: 25px;
+	    }
+		.main ul li{
+		list-style: none;
+		width: 100%;
+		height: 30px;
+		background: #fff;
+		margin: 5px 0;
+		line-height: 30px;
+		overflow: hidden;
+		border-left: 5px solid #629A9C;
+		border-radius: 3px;
+	    }
+		.main ul li input{
+		width: 20px;
+		height: 20px;
+		margin-left: 10px;
+		margin-top: 5px;
+		float: left;
+	    }
+		.main ul li span{
+		margin-left: 10px;
+	    }
+		.main ul li .box{
+		width: 14px;
+		height: 14px;
+		padding: 3px;
+		border: 1px solid #ccc;
+		float: right;
+		background: #ccc;
+		background-origin: content-box;
+		background-clip: content-box;
+		border-radius: 50%;
+		margin-right: 5px;
+		margin-top: 5px;
+		cursor:pointer;
+	    }
+		.main ul li .box div{
+		width: 80%;
+		margin-top: 6px;
+		margin-left: 1px;
+		border-bottom: 1px solid #fff;
+		}
+	</style>
+	<script>
+		/*	nowStr.innerHTML=nowStr;
+			nowNum.innerHTML=nowNum;
+			comStr.innerHTML=comStr;
+			comNum.innerHTML=comNum;
+		*/
+		var btn = document.querySelector("#btn");
+		var nr = document.querySelector("#nr");
+		var nowStr1 = document.querySelector("#bwl");
+		var conStr1 = document.querySelector("#ywc");
+		var nowNum1 = document.querySelector(".wwc");
+		var conNum1 = document.querySelector(".wc");
+		// var nowcon = document.querySelector(".bwl .a")
+		// var comcon = document.querySelector(".ywc .a")
+		nr.onkeydown=function(e){
+			if(e.keyCode == 13){
+				var val = this.value;
+				if(val.length == 0){
+					alert("请输入内容");
+					return;
+				}
+				var data = getData();
+				data.push({
+					title:val,
+					status:false
+				})
+				this.value="";
+				setData(data);
+				reload();
+			}
+		}
+		reload();
+		//查询数据
+		function getData(){
+			var data = JSON.parse(localStorage.getItem("todos"));
+			//空的话 返回是一个空数组
+			return data||[];
+		}
+		//创建数据
+		function setData(data){
+			localStorage.setItem("todos",JSON.stringify(data));
+		}
+		//
+		function change(i,sta){
+			var data=getData();
+			data[i].status=sta;
+			setData(data);
+			reload();
+		}
+		function del(i){
+			var data=getData();
+			data.splice(i,1);
+			setData(data);
+			reload();
+		}
+		//
+		function reload(){
+			var data = getData();
+			var nowStr="";
+			var	comStr="";
+			var nowNum=0;
+			var comNum=0;
+			for(var i=0;i<data.length;i++){
+				if(data[i].status==false){
+					nowStr+='<li><input type="checkbox" onclick=change('+i+',true)><span class="a">'+data[i].title+'</span><div class="box" onclick=del('+i+')><div></div></div></li>';
+					// console.log(nowStr)
+					nowNum++;
+				}else{
+					comStr+='<li><input type="checkbox" checked onclick=change('+i+',false)><span class="a" checked>'+data[i].title+'</span><div class="box" onclick=del('+i+')><div></div></div></li>';
+					comNum++;
+				}
+			}
+			nowStr1.innerHTML=nowStr;
+			nowNum1.innerHTML=nowNum;
+			conStr1.innerHTML=comStr;
+			conNum1.innerHTML=comNum;
+		}
+	</script>
+</body>
+</html>
